@@ -7,11 +7,12 @@
 #include "lib.h"
 
 #define debug 0
+
 int main(char** args){
     set<point> pnts;
     point src({-1, -1, -1});
     point dest({-1, -1, -1});
-    get_nodes(pnts, src, dest, "data/nodes.txt");
+    get_nodes(pnts, src, dest, "data/out.txt");
     map<point, vector<point>> list;
     get_adj_list(pnts, list);
     if(debug)

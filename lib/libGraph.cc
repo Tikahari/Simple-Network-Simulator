@@ -41,6 +41,27 @@ bool point::operator==(const point &other) const{
     return (x == other.x && y == other.y);
 }
 
+bool line::is_blocked(point from , point to){
+    //check if from and to are on opposite side of (first,second)
+    if(is_left(first,second,from) ^ is_left(first,second,to)){
+    //check if first and second are on opposite side of (from,to)
+        if(is_left(from,to,first) ^ is_left(from,to,second)){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool line::is_left(point l1, point l2, point p){
+    return ((l2.x - l1.x)*(p.y - l1.y) - (l2.y - l1.y)*(p.x - l1.x)) > 0;
+}
+
+bool line::operator<(const line &p) const{
+    if(p.first<first)return true;
+    if(p.first==first  and p.second < second)return true;
+    else return false;
+}
+
 void get_nodes(set<point> &points,point &src, point &dest ,string filename){
     ifstream in(filename);
     vector<point> vec;

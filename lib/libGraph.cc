@@ -1,37 +1,45 @@
-#include<iostream>
-#include<vector>
-#include<map>
-#include<queue>
-#include<set>
-#include<fstream>
+#include <iostream>
+#include <vector>
+#include <map>
+#include <queue>
+#include <set>
+#include <fstream>
+#include "libGraph.h"
 
-using namespace std;
+#define debug 0
 
-class point{
-public:
-    long x, y, z;
-    point(long x,long y,long z):x(x),y(y),z(z){}
-    bool is_nigh(point &other){
+point::point(long x, long y, long z){
+    if(debug)
+        printf("constructing point\n");
+    this->x = x;
+    this->y = y;
+    this->z = z;
+}
+
+bool point::is_nigh(point &other){
+    if(debug)
+        printf("is nigh\n");
+    return true;
+}
+
+void point::print() const{
+    cout << "{" << x << "," << y << "," << z << "}" << endl; 
+}
+
+bool point::operator<(const point &p) const{
+    if (p.x < x)
         return true;
-    }
-    // Just for debugging ;
-    void print() const{
-        cout << "{" << x << "," << y << "," << z << "}" << endl; 
-    }
-    bool operator<(const point &p) const{
-        if (p.x < x)
-            return true;
-        else if (p.x == x and p.y < y)
-            return true;
-        else if (p.y == y and p.x == x and p.z < z)
-            return true;
-        else
-            return false;
-    }
-    bool operator==(const point &other) const{
-        return (x == other.x && y == other.y && z == other.z);
-    }
-};
+    else if (p.x == x and p.y < y)
+        return true;
+    else if (p.y == y and p.x == x and p.z < z)
+        return true;
+    else
+        return false;
+}
+
+bool point::operator==(const point &other) const{
+    return (x == other.x && y == other.y && z == other.z);
+}
 
 void get_nodes(set<point> &points,point &src, point &dest ,string filename){
     ifstream in(filename);
@@ -48,17 +56,6 @@ void get_nodes(set<point> &points,point &src, point &dest ,string filename){
     }
 }
 
-// Just for debugging ; 
-void printlist(map<point,vector<point>> &list){
-    for(auto l : list){
-        l.first.print();
-        for(auto p : l.second){
-            cout << "\t => ";
-            p.print();
-        }
-        cout << endl;
-    }
-}
 void get_adj_list(set<point> &points,map<point,vector<point>>& list){
     for(auto &p :points){
         vector<point> nigh;
@@ -104,18 +101,15 @@ int bfs(point &src, point &dest, map<point,vector<point>> &list){
     return -1;
 }
 
-int get_score(){
-    return 0;
-}
 
-int main(){
-    set<point> pnts;
-    point src({-1, -1, -1});
-    point dest({-1, -1, -1});
-    get_nodes(pnts, src, dest, "nodes.txt");
-    map<point, vector<point>> list;
-    get_adj_list(pnts, list);
-    // printlist(list);
-    int res = bfs(src, dest, list);
-    cout << "min hops " << res << endl;
+// Just for debugging ; 
+void printlist(map<point,vector<point>> &list){
+    for(auto l : list){
+        l.first.print();
+        for(auto p : l.second){
+            cout << "\t => ";
+            p.print();
+        }
+        cout << endl;
+    }
 }

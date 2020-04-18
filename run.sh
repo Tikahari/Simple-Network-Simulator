@@ -1,3 +1,4 @@
 make
-python data.py 1000 10000 out.txt
+chmod +x sim
+python ./src/data.py 1000 ./data/out.txt
 ./sim

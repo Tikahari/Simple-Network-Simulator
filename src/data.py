@@ -4,10 +4,10 @@ import sys
 import random
 
 class Data:
-    def __init__(self, lower, upper, density, filename):
-        self.lower = lower
-        self.upper = upper
-        self.density = density
+    def __init__(self, grid, filename):
+        self.lower = -1*grid
+        self.upper = grid
+        self.density = 2*grid
         self.filename = filename
         self.nodes = []
         self.x = []
@@ -40,12 +40,9 @@ class Data:
         return
 
 if __name__ == '__main__':
-    data = Data(-1*sys.argv[1], sys.argv[1], 2*sys.argv[1], sys.argv[3])
+    print(-1*sys.argv[1], sys.argv[2])
+    data = Data(int(sys.argv[1]), sys.argv[2])
     data.createMesh()
-    data.getNodes(sys.argv[2])
+    data.getNodes(10*data.upper)
     data.writeNodes()
     sys.exit()
-coordinates = np.random.randint(1,50,size=(100000,3))
-with open("nodes.txt","w") as f:
-    f.write("\n".join(" ".join(map(str, x)) for x in coordinates)
-)

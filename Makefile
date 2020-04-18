@@ -1,8 +1,34 @@
-all : sim.o
-	g++ -o sim sim.o
+vpath %.h ./include
+vpath %.o ./build
+vpath lib% ./lib
 
-sim.o : sim.cc
-	g++ -g -c sim.cc
+CC			:=  g++
+CFLAGS_lib	:=  -L./lib -lSim
+CFLAGS_inc	:= 	-I./include
+objdir		:= 	./build
+libdir		:=	./lib
+libobjs 		:= 	libGraph.o libScore.o
+src			:=	./src/sim.cc
+srcobj		:=	sim.o
+
+.PHONY: clean
+
+all: $(objdir)/libGraph.o $(objdir)/libScore.o $(libdir)/libSim.a $(objdir)/$(srcobj) sim
+
+$(objdir)/libGraph.o : $(libdir)/libGraph.cc
+	$(CC) $(CFLAGS_inc) -c $< -o $@
+
+$(objdir)/libScore.o : $(libdir)/libScore.cc
+	$(CC) -c $< -o $@
+
+$(libdir)/libSim.a: ./build/libGraph.o
+	ar crs $@ $^
+
+$(objdir)/$(srcobj): $(src)
+	$(CC) $(CFLAGS_inc) -c $< -o $@
+
+sim : $(src)
+	$(CC) $(objdir)/$(srcobj) $(CFLAGS_lib) $(CFLAGS_inc) -o $@
 
 clean : 
-	rm sim.o sim
+	rm sim build/* lib/libSim.a

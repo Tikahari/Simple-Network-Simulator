@@ -104,6 +104,10 @@ int bfs(point &src, point &dest, map<point,vector<point>> &list){
     return -1;
 }
 
+int get_score(){
+    return 0;
+}
+
 int main(){
     set<point> pnts;
     point src({-1, -1, -1});

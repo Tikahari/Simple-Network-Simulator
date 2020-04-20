@@ -6,11 +6,19 @@
 #include <map>
 #include <queue>
 #include <set>
+#include <random>
 #include "lib.h"
 
 #define debug 0
 #define iterations 25
 #define penalty 9999
+
+int get_random(int upper){
+    std::random_device rd;
+    std::mt19937 eng(rd());
+    std::uniform_int_distribution<> distr(0,upper);
+    return distr(eng);
+}
 
 bool in(int* indices, int count){
     int i = 0;
@@ -26,40 +34,33 @@ point* get_points(map<point, vector<point>> &list, int* indices){
     int count = 0;
     int ret_ind = 0;
     point* ret = new point[2];
-    for(map<point,vector<point>>::iterator it = list.begin(); it != list.end(); it++, count++){
+    for(map<point,vector<point>>::iterator it = list.begin(); it != list.end(); it++, count++)
         if(in(indices, count)){
             ret[ret_ind] = point(it->first.x, it->first.y);
             ret_ind++;
         }
-    }
     return ret;
 }
 
 std::vector<point> find(map<point,vector<point>> &list, point p){
-    for(map<point,vector<point>>::iterator it = list.begin(); it != list.end(); it++){
-        if(it->first.x == p.x && it->first.y == p.y){
+    for(map<point,vector<point>>::iterator it = list.begin(); it != list.end(); it++)
+        if(it->first.x == p.x && it->first.y == p.y)
             return it->second;
-        }
-    }
     return std::vector<point>();
 }
 
 bool find(set<point> visited, point p){
-    for(auto i: visited){
-        if(i.x == p.x && i.y == p.y){
+    for(auto i: visited)
+        if(i.x == p.x && i.y == p.y)
             return true;
-        }
-    }
     return false;
 }
 
 // helper to check if path is blocked by any obstacle
 bool if_blocked(vector<line> &obs,point &from , point &to){
-    for (line &o : obs){
-        if (o.is_blocked(from, to) == true){
+    for (line &o : obs)
+        if (o.is_blocked(from, to) == true)
             return true;
-        }
-    }
     return false;
 }
 
@@ -114,10 +115,10 @@ float get_Hops(float* hops, map<point,vector<point>> &list,vector<line> obstacle
     int ind1;
     int ind2;
     for(int i = 0; i < iterations; i++){
-        ind1 = rand() % (list.size() -2);
-        ind2 = rand() % (list.size() -2);
+        ind1 = get_random(list.size()-1);
+        ind2 = get_random(list.size() -1);
         int indices[] = {ind1, ind2};
-        if(debug) printf("indices %d %d\n", ind1, ind2);
+        printf("indices %d %d\n", ind1, ind2);
         if(ind1 == ind2){
             i--;
             continue;

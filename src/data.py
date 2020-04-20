@@ -2,6 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import sys
 import random
+import math
 
 class Data:
     def __init__(self, grid, filename):
@@ -44,9 +45,9 @@ class Data:
             f.write(str(self.upper))
 if __name__ == '__main__':
     print(-1*sys.argv[1])
-    data = Data(int(sys.argv[1]), "./data/out.txt")
+    data = Data(int(sys.argv[1]), "./data/nodes.txt")
     data.createMesh()
     data.setElevation()
-    data.getNodes(10*data.upper)
+    data.getNodes(math.floor(data.upper/2))
     data.writeNodes()
     data.writeGridVal()

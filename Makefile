@@ -15,21 +15,25 @@ srcobj			:=	sim.o
 
 all: $(objdir)/libGraph.o $(objdir)/libScore.o $(libdir)/libSim.a $(objdir)/$(srcobj) sim
 
-$(objdir)/libGraph.o : $(libdir)/libGraph.cc
+$(objdir)/libGraph.o: $(libdir)/libGraph.cc
 	mkdir -p $(objdir)
 	$(CC) $(CFLAGS_inc) -c $< -o $@
 
-$(objdir)/libScore.o : $(libdir)/libScore.cc
-	$(CC) -c $< -o $@
+$(objdir)/libScore.o: $(libdir)/libScore.cc
+	$(CC) $(CFLAGS_inc) -c $< -o $@
 
-$(libdir)/libSim.a: ./build/libGraph.o
+$(libdir)/libSim.a: $(libobjs)
 	ar crs $@ $^
 
 $(objdir)/$(srcobj): $(src)
 	$(CC) $(CFLAGS_inc) -c $< -o $@
 
-sim : $(src)
+sim: $(src)
 	$(CC) $(objdir)/$(srcobj) $(CFLAGS_lib) $(CFLAGS_inc) -o $@
 
-clean : 
+clean: 
 	rm sim build/* lib/libSim.a
+
+remake:
+	make clean
+	make

@@ -4,17 +4,20 @@
 #include <queue>
 #include <set>
 #include <fstream>
-#include<iostream>
-#include<vector>
-#include<map>
-#include<queue>
-#include<set>
-#include<unordered_set>
-#include<fstream>
-#include "libGraph.h"
+#include <iostream>
+#include <vector>
+#include <map>
+#include <queue>
+#include <set>
+#include <unordered_set>
+#include <fstream>
+#include <math.h>
+#include "lib.h"
+
 using namespace std;
 
 #define debug 0
+#define dimension 2
 
 bool point::is_nigh(point &other){
     if(debug)
@@ -23,7 +26,7 @@ bool point::is_nigh(point &other){
 }
 
 void point::print() const{
-    cout << "{" << x << "," << y << "}" << endl; 
+    cout << "{" << x << "," << y << "}"; 
 }
 
 bool point::operator<(const point &p) const{
@@ -62,18 +65,37 @@ bool line::operator<(const line &p) const{
     else return false;
 }
 
-void get_nodes(set<point> &points,point &src, point &dest ,string filename){
-    ifstream in(filename);
-    vector<point> vec;
-    while(!in.eof()){
-        long x = 0 , y = 0 ;
-        in >> x >> y;
-        vec.push_back({x,y});
+void str_to_node(int arr[], std::string line){
+    std::string word = "";
+    int count = 0;
+    for(int i = 0; i < line.length() && count < 2; i++){
+        if(isdigit(line[i])){
+            word += line[i];
+        }
+        else{
+            arr[count] = atoi(word.c_str());
+            word = "";
+            count++;
+        }
     }
-    src = vec[0];
-    dest = vec.back();
-    for(auto v:vec){
-        points.insert(v);
+    if(debug){
+        std::cout<<arr[0]<<'\t'<<arr[1]<<'\n';
+    }
+}
+
+void get_nodes(set<point> &points, string filename){
+    if(debug)
+        std::cout<<"get nodes from "<< filename <<'\n';
+    std::ifstream in(filename);
+    std::string line;
+    while(!in.eof()){
+        std::getline(in, line);
+        int arr[dimension];
+        str_to_node(arr, line);
+        line = "";
+        // if(debug)
+            // printf("in file, %f %f %f\n", x, y, z);
+        points.insert({arr[0], arr[1]});
     }
 }
 
@@ -92,10 +114,11 @@ void get_obstacles(vector<line> &obstacles, string obstaclesfile){
 
 // Just for debugging ; 
 void printlist(map<point,vector<point>> &list){
+    std::cout<<"print adj list\n";
     for(auto l : list){
         l.first.print();
         for(auto p : l.second){
-            cout << "\t => ";
+            cout << "\t&";
             p.print();
         }
         cout << endl;
@@ -103,63 +126,22 @@ void printlist(map<point,vector<point>> &list){
 }
 
 void get_adj_list(set<point> &points,map<point,vector<point>>& list){
-    // Adjust this - how far to consider as a neighbor
-    int NEIGHBOUR_DISTANCE = 5;
-
-    for(auto &p :points){
-        vector<point> nigh;
-        list.insert({p,nigh});
-    }
-    for(auto &p : points){
-        vector<point> nigs;
-        for(int i=1;i<=NEIGHBOUR_DISTANCE+1;i++){
-            nigs.push_back({p.x - i, p.y});
-            nigs.push_back({p.x + i, p.y});
-        }
-        for(int i=1;i<=NEIGHBOUR_DISTANCE;i++){
-            nigs.push_back({p.x, p.y - i});
-            nigs.push_back({p.x, p.y + i});
-        }
-        for(auto &n :nigs){
-            if(points.find(n) != points.end()){
-                list[p].push_back(n);
+    int distance;
+    for(auto &p1 : points){
+        std::vector<point> temp;
+        for(auto &p2: points){
+            if(debug)
+                std::cout<<p1.x<<' '<<p2.x<<' '<<p1.y<<' '<<p2.y<<'\n';
+            // improve effeciency
+            if(abs(p1.x-p2.x) >= NEIGHBOUR_DISTANCE || abs(p1.y-p2.y) >= NEIGHBOUR_DISTANCE || (p1.x == p2.x && p1.y == p2.y)){
+                continue;
+            }
+            //distance form
+            distance = pow((pow(p1.x-p2.x, 2)+pow(p1.y-p2.y, 2)),0.5);
+            if(distance < NEIGHBOUR_DISTANCE){
+                temp.push_back({p2});
             }
         }
+        list[p1]= temp;
     }
 }
-
-// helper to check if path is blocked by any obstacle
-bool if_blocked(vector<line> &obs,point &from , point &to){
-    for (line &o : obs){
-        if (o.is_blocked(from, to) == true){
-            return true;
-        }
-    }
-    return false;
-}
-
-int bfs(point &src, point &dest, map<point,vector<point>> &list,vector<line> obstacles){
-    queue<point> q1,q2;
-    q1.push(src);
-    set<point> visited;
-    visited.insert(src);
-    int res = 0;
-    while(!q1.empty()){
-        while(!q1.empty()){
-            point top = q1.front();q1.pop();
-            if(top==dest)return res;
-            for(auto nig : list.at(top)){
-                if(if_blocked(obstacles,top,nig))
-                    continue;
-                if(visited.find(nig)==visited.end()){
-                    q2.push(nig);
-                    visited.insert(nig);
-                }
-            }
-        }
-        res++;
-        swap(q1,q2);
-    }
-    return -1;
-}
-

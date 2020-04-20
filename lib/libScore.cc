@@ -64,6 +64,19 @@ bool if_blocked(vector<line> &obs,point &from , point &to){
     return false;
 }
 
+int dfs(point &src, point &dest, map<point,vector<point>> &list,vector<line> obstacles, set<point> visited, int hops){
+    if(src.x == dest.x && src.y == dest.y){
+        return hops;
+    }
+    hops++;
+    visited.insert(src);
+    std::vector<point> adj = find(list, src);
+    for(auto i: adj)
+        if(!find(visited, i) && !if_blocked(obstacles,src,i))
+            return dfs(i, dest, list, obstacles, visited, hops);
+    if(debug) printf("dfs return -1\n");
+    return -1;
+}
 
 int bfs(point &src, point &dest, map<point,vector<point>> &list,vector<line> obstacles){
     if(debug)
@@ -102,9 +115,9 @@ int get_gridVal(std::string filename){
 }
 
 int get_Coverage(std::string filename){
-    std::cout<<"get coverage " << filename << '\n';
+    if(debug) std::cout<<"get coverage " << filename << '\n';
     int total_area = pow(get_gridVal(filename), 2);
-    std::cout<< "total area "<<total_area<<'\n';
+    if(debug) std::cout<< "total area "<<total_area<<'\n';
     return 0;
 }
 
@@ -116,24 +129,29 @@ float get_Hops(float* hops, map<point,vector<point>> &list,vector<line> obstacle
     int ind2;
     for(int i = 0; i < iterations; i++){
         ind1 = get_random(list.size()-1);
-        ind2 = get_random(list.size() -1);
+        ind2 = get_random(list.size()-1);
         int indices[] = {ind1, ind2};
-        printf("indices %d %d\n", ind1, ind2);
+        if(debug) printf("indices %d %d\n", ind1, ind2);
         if(ind1 == ind2){
             i--;
             continue;
         }
+        // set up bfs
         point* ps = new point[2];
         ps = get_points(list, indices);
-        int num = bfs(ps[0], ps[1], list, obstacles);
-        if(num == -1){
+        int bfs_ = bfs(ps[0], ps[1], list, obstacles);
+        // set up dfs
+        set<point> visited;
+        int dfs_ = dfs(ps[0], ps[1], list, obstacles, visited, 0);
+
+        if(bfs_ == -1){
             avg_hops += penalty;
             if(debug) printf("no connection\n");
             i--;
             continue;
         }
-        avg_hops += num;
-        if(debug) printf("output of bfs is %d\navg_hops is %f\niteration %d\n", num, avg_hops, i);
+        avg_hops += (bfs_ + 2*dfs_) / 3;
+        if(debug) printf("output of bfs is %u\noutput of dfs is %u\navg_hops is %f\niteration %d\n", bfs_, dfs_, avg_hops, i);
     }
     *hops = avg_hops / iterations;
     if(debug) std::cout<<"hops "<<*hops<<' '<<hops<<'\n';

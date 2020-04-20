@@ -20,7 +20,7 @@ class Data:
     def setElevation(self):
         # randomize elevation
         self.z = np.random.random((self.upper, self.upper))
-        print(self.z)
+        # print(self.z)
     def plotElevation(self):
         # elevation map
         plt.contourf(self.x, self.y, self.z, cmap = 'jet')  
@@ -44,7 +44,6 @@ class Data:
         with open("./data/gridval.txt", "w") as f:
             f.write(str(self.upper))
 if __name__ == '__main__':
-    print(-1*sys.argv[1])
     data = Data(int(sys.argv[1]), "./data/nodes.txt")
     data.createMesh()
     data.setElevation()

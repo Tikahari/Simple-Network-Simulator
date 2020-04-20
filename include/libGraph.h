@@ -11,6 +11,7 @@ public:
     bool operator<(const point &p) const;
     bool operator==(const point &other) const;
     point(int x,int y):x(x),y(y){}
+    point(){};
 };
 class line{
 public:
@@ -27,5 +28,5 @@ void get_obstacles(vector<line> &obstacles, string obstaclesfile);
 void get_adj_list(set<point> &points,map<point,vector<point>>& list);
 int bfs(point &src, point &dest, map<point,vector<point>> &list,vector<line> obstacles);
 void printlist(map<point,vector<point>> &list);
-
+void printlist2(map<point,vector<point>> &list);
 #endif

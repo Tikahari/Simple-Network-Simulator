@@ -125,6 +125,34 @@ void printlist(map<point,vector<point>> &list){
     }
 }
 
+void printlist2(map<point,vector<point>> &list){
+    printf("printlist2\n");
+    for(std::map<point,vector<point>>::iterator it = list.begin(); it!= list.end(); it++){
+        std::cout<<"first: ";
+        it->first.print();
+        if(list.find(it->first) == list.end()){
+            printf("\ncould not find item in list\n");
+        }
+        for(std::map<point,vector<point>>::iterator it1 = list.begin(); it1 != list.end(); it1++){
+            if(it1->first.x == it->first.x && it1->first.y == it->first.y){
+                printf("was found\n");
+                for(auto i: it->second){
+                    std::cout<<" || ";
+                    i.print();
+                    std::cout<<"\t";
+                }
+            }
+        }
+        std::cout<<'\n';
+        for(auto i: it->second){
+            std::cout<<" & ";
+            i.print();
+            std::cout<<"\t";
+        }
+        std::cout<<'\n';
+    }
+}
+
 void get_adj_list(set<point> &points,map<point,vector<point>>& list){
     int distance;
     for(auto &p1 : points){
@@ -142,6 +170,7 @@ void get_adj_list(set<point> &points,map<point,vector<point>>& list){
                 temp.push_back({p2});
             }
         }
-        list[p1]= temp;
+        list[p1] = temp;
+        if(debug) std::cout<<" list size "<<list.size()<<'\n';
     }
 }

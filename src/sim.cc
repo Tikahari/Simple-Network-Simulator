@@ -25,27 +25,27 @@ int main(int argc, char * argv[]){
     set<point> points;
     vector<line> obstacles;
     map<point, vector<point>> list;
-    double hops;
-    double coverage;
+    float hops;
+    float coverage;
 
     get_nodes(points, inputfile);
     get_obstacles(obstacles,obstaclefile);
     get_adj_list(points, list);
 
     if(debug){
+        printf("list size %d\n", list.size());
         printlist(list);
+        printlist2(list);
         for(auto i: points)
             i.print();
     }
-    printf("list size %d\n", list.size());
-
+    
     // for(auto& p: points){
     //     std::map<point,std::vector<point>>::iterator ps = list.find(p);
     //     ps->second[1].print();
     // }
-
-    get_Hops(&hops, list, obstacles);
-	   
+    get_Hops(&hops, list, obstacles, gridval);
+	printf("average number of hops is %f\n", hops);
     // int res = bfs(src, dest, list, obstacles);
     // cout << "min hops " << res << endl;
 
